@@ -1,0 +1,23 @@
+{
+  "name": "@ube-tsp/example-advanced",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "tsp compile .",
+    "start": "node --import tsx main.ts"
+  },
+  "dependencies": {
+    "ky": "^1.8.2",
+    "@ube-tsp/ky-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@ube-tsp/ky-emitter": "workspace:*",
+    "@typespec/compiler": "^1.2.1",
+    "@typespec/http": "^1.2.1",
+    "@typespec/openapi": "^1.2.1",
+    "@typespec/openapi3": "1.1.0",
+    "typescript": "^5.9.3",
+    "tsx": "^4.19.0"
+  }
+}
