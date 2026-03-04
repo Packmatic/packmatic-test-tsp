@@ -290,3 +290,42 @@ it("makes default optional", async () => {
     `,
   );
 });
+
+it("works with @discriminator on model inheritance", async () => {
+  const { Pet } = await runner.compile(t.code`
+    @discriminator("kind")
+    model ${t.model("Pet")} {
+      kind: string;
+      name: string;
+      weight?: float64;
+    }
+
+    model Cat extends Pet {
+      kind: "cat";
+      meow: boolean;
+    }
+
+    model Dog extends Pet {
+      kind: "dog";
+      bark: boolean;
+    }
+  `);
+
+  expectRender(
+    runner.program,
+    <TsSchema type={Pet} />,
+    `
+      ({
+        kind: "cat";
+        meow: boolean;
+        name: string;
+        weight?: number;
+      } | {
+        kind: "dog";
+        bark: boolean;
+        name: string;
+        weight?: number;
+      })
+    `,
+  );
+});

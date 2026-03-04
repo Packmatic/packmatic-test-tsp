@@ -95,6 +95,40 @@ function modelBaseType($: Typekit, type: Model) {
     return code`Record<string, ${(<TsSchema type={(type.indexer ?? type.baseModel!.indexer)!.value} />)}>`;
   }
 
+  const discriminated = $.model.getDiscriminatedUnion(type);
+  if (discriminated) {
+    const union = (
+      <For each={discriminated.variants} joiner=" | ">
+        {(_, variant) => {
+          const allProperties = $.model.getProperties(variant, { includeExtended: true });
+          return (
+            <InterfaceExpression>
+              <For each={allProperties} semicolon hardline enderPunctuation>
+                {(_, property) => (
+                  <InterfaceMember
+                    name={property.name}
+                    optional={property.optional || !!property.defaultValue}
+                    doc={
+                      !!property.defaultValue && (
+                        <Prose>
+                          @defaultValue `
+                          <ValueExpression value={property.defaultValue} />`
+                        </Prose>
+                      )
+                    }
+                    type={<TsSchema type={property.type} />}
+                  />
+                )}
+              </For>
+            </InterfaceExpression>
+          );
+        }}
+      </For>
+    );
+    // NOTE: Must use code`` for parens — raw text in JSX fragments (<>(...) </>) is silently dropped by Alloy
+    return code`(${union})`;
+  }
+
   return (
     <InterfaceExpression>
       <For each={type.properties} semicolon hardline enderPunctuation>
