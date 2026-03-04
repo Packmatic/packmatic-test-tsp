@@ -142,6 +142,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets/123", {
         method: "get",
+        throwHttpErrors: false,
       });
     });
 
@@ -157,6 +158,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets", {
         method: "get",
+        throwHttpErrors: false,
         searchParams: expectedSearchParams,
       });
     });
@@ -171,6 +173,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets/123", {
         method: "get",
+        throwHttpErrors: false,
         headers: {
           "Authorization": "Bearer token",
           "X-API-Key": "key123",
@@ -185,7 +188,8 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets", {
         method: "post",
-        body: '{"name":"Buddy","breed":"Golden Retriever"}',
+        throwHttpErrors: false,
+        json: { name: "Buddy", breed: "Golden Retriever" },
       });
     });
 
@@ -201,6 +205,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets/123", {
         method: "get",
+        throwHttpErrors: false,
         timeout: 5000,
         headers: { "X-Custom": "value" },
         retry: 3,
@@ -222,6 +227,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets/123", {
         method: "get",
+        throwHttpErrors: false,
         headers: {
           "X-Request-ID": "req-456",
           "X-Custom": "value",
@@ -249,6 +255,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets/123", {
         method: "get",
+        throwHttpErrors: false,
         headers: {
           "Authorization": "Bearer new-token", // kyOptions takes precedence
           "X-Request-ID": "req-456",
@@ -275,6 +282,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("pets", {
         method: "get",
+        throwHttpErrors: false,
         searchParams: customSearchParams, // Only the kyOptions searchParams are used
       });
     });
@@ -300,6 +308,7 @@ describe("createClient", () => {
 
       expect(mockKy).toHaveBeenCalledWith("users/user123", {
         method: "get",
+        throwHttpErrors: false,
         searchParams: expectedSearchParams,
         timeout: 10000,
         headers: {

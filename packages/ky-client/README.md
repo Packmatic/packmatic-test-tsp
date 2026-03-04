@@ -20,6 +20,10 @@ await client.PetStore.getPet({ params: { path: { petId: 123 } } });
 npm install @ube-tsp/ky-client ky
 ```
 
+## TODO
+
+- [ ] Derive request `Content-Type` from the operation map (emitted from TypeSpec) instead of inferring it from the JS body type at runtime
+
 ## License
 
 MIT

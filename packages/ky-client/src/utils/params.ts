@@ -59,27 +59,6 @@ export function buildHeaders(params?: RequestParams): Record<string, string> | u
   return Object.keys(headers).length > 0 ? headers : undefined;
 }
 
-/**
- * Builds request body based on body type
- */
-export function buildRequestBody(params?: RequestParams): BodyInit | undefined {
-  if (!params || params.body === undefined) {
-    return undefined;
-  }
-
-  // If it's URLSearchParams, pass as-is
-  if (params.body instanceof URLSearchParams) {
-    return params.body;
-  }
-
-  // If it's FormData, pass as-is
-  if (params.body instanceof FormData) {
-    return params.body;
-  }
-
-  // For objects or any other JS primitives, JSON stringify to body
-  return JSON.stringify(params.body);
-}
 
 /**
  * Parses response body based on content-type header

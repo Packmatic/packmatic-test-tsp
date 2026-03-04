@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buildHeaders,
   buildQueryParams,
-  buildRequestBody,
   buildUrlWithPathParams,
   parseResponseBody,
   extractResponseHeaders,
@@ -128,39 +127,6 @@ describe("buildHeaders", () => {
   });
 });
 
-describe("buildRequestBody", () => {
-  it("returns undefined when no body", () => {
-    expect(buildRequestBody()).toBeUndefined();
-    expect(buildRequestBody({ params: {} })).toBeUndefined();
-  });
-
-  it("passes URLSearchParams and FormData as-is", () => {
-    const searchParams = new URLSearchParams();
-    searchParams.append("name", "John");
-    expect(buildRequestBody({ body: searchParams })).toBe(searchParams);
-
-    const formData = new FormData();
-    formData.append("file", new Blob(["test"]), "test.txt");
-    expect(buildRequestBody({ body: formData })).toBe(formData);
-  });
-
-  it("JSON stringifies objects and primitives", () => {
-    expect(buildRequestBody({ body: { name: "John", age: 30 } })).toBe('{"name":"John","age":30}');
-    expect(buildRequestBody({ body: [1, 2, 3] })).toBe("[1,2,3]");
-    expect(buildRequestBody({ body: "test string" })).toBe('"test string"');
-    expect(buildRequestBody({ body: 42 })).toBe("42");
-    expect(buildRequestBody({ body: true })).toBe("true");
-    expect(buildRequestBody({ body: null })).toBe("null");
-  });
-
-  it("handles complex nested objects", () => {
-    const params = {
-      body: { user: { name: "John", tags: ["admin", "user"] } },
-    };
-    const result = buildRequestBody(params);
-    expect(result).toBe('{"user":{"name":"John","tags":["admin","user"]}}');
-  });
-});
 
 describe("parseResponseBody", () => {
   const createMockResponse = (contentType: string, body: unknown): KyResponse => {

@@ -3,7 +3,6 @@ import type { ApiResponse, Operation, OperationMap, RequestParams } from "./type
 import {
   buildHeaders,
   buildQueryParams,
-  buildRequestBody,
   buildUrlWithPathParams,
   extractResponseHeaders,
   parseResponseBody,
@@ -28,14 +27,13 @@ export function createClient<T>(ky: KyInstance, operationMap: OperationMap): T {
 
     const headers = buildHeaders(params);
     const queryParams = kyOptions?.searchParams ?? buildQueryParams(params);
-    const requestBody = buildRequestBody(params);
-
     const options: Options = {
       method: method.toLowerCase() as NonNullable<Options["method"]>,
+      throwHttpErrors: false,
       ...kyOptions,
       ...(headers && { headers: { ...headers, ...kyOptions?.headers } }),
       ...(queryParams && { searchParams: queryParams }),
-      ...(requestBody !== undefined && { body: requestBody }),
+      ...buildBodyOptions(params),
     };
 
     const kyResponse = await ky(url, options);
@@ -44,14 +42,15 @@ export function createClient<T>(ky: KyInstance, operationMap: OperationMap): T {
 
     // Extract headers based on the resolved status code
     const responseMetadata = response[statusCode.toString()];
-    const responseHeaders = responseMetadata ? extractResponseHeaders(kyResponse, responseMetadata.headers) : undefined;
+    const hasDefinedHeaders = responseMetadata?.headers && responseMetadata.headers.length > 0;
+    const responseHeaders = hasDefinedHeaders
+      ? extractResponseHeaders(kyResponse, responseMetadata.headers) ?? {}
+      : undefined;
 
     return {
       response: {
         statusCode,
-        ...(!!responseHeaders && {
-          headers: responseHeaders,
-        }),
+        ...(responseHeaders !== undefined && { headers: responseHeaders }),
         content,
       },
       kyResponse,
@@ -81,4 +80,38 @@ export function createClient<T>(ky: KyInstance, operationMap: OperationMap): T {
   });
 
   return client as T;
+}
+
+// TODO: derive request content type from the operation map instead of inferring from body type
+// see: https://github.com/anthropics/ube-tsp/issues/XXX
+function buildBodyOptions(params?: RequestParams): Pick<Options, "body" | "json"> {
+  if (!params || params.body === undefined) {
+    return {};
+  }
+
+  const { body } = params;
+
+  // Binary/stream types — pass as raw body (ky infers content-type)
+  if (
+    body instanceof FormData ||
+    body instanceof URLSearchParams ||
+    body instanceof Blob ||
+    body instanceof ArrayBuffer ||
+    body instanceof ReadableStream
+  ) {
+    return { body };
+  }
+
+  // Plain objects and arrays — use ky's json option (auto-sets Content-Type: application/json)
+  if (typeof body === "object" && body !== null) {
+    return { json: body };
+  }
+
+  // Strings — pass as raw body (ky defaults to text/plain)
+  if (typeof body === "string") {
+    return { body };
+  }
+
+  // Fallback for other primitives
+  return { json: body };
 }
