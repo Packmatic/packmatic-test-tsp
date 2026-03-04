@@ -98,6 +98,37 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  examples/notifications:
+    dependencies:
+      '@ube-tsp/ky-client':
+        specifier: workspace:*
+        version: link:../../packages/ky-client
+      ky:
+        specifier: ^1.8.2
+        version: 1.14.3
+    devDependencies:
+      '@typespec/compiler':
+        specifier: ^1.2.1
+        version: 1.8.0(@types/node@25.1.0)
+      '@typespec/http':
+        specifier: ^1.2.1
+        version: 1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0))
+      '@typespec/openapi':
+        specifier: ^1.2.1
+        version: 1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0))(@typespec/http@1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0)))
+      '@typespec/openapi3':
+        specifier: 1.1.0
+        version: 1.1.0(@typespec/compiler@1.8.0(@types/node@25.1.0))(@typespec/http@1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0)))(@typespec/openapi@1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0))(@typespec/http@1.8.0(@typespec/compiler@1.8.0(@types/node@25.1.0))))
+      '@ube-tsp/ky-emitter':
+        specifier: workspace:*
+        version: link:../../packages/ky-emitter
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/ky-client:
     dependencies:
       ky:

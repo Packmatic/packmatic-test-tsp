@@ -1,0 +1,3 @@
+emit:
+  - "@ube-tsp/ky-emitter"
+  - "@typespec/openapi3"
