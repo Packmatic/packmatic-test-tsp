@@ -106,6 +106,64 @@ it("complex", async () => {
   );
 });
 
+it("operation map with global namespace as base", async () => {
+  await runner.compile(t.code`
+    namespace Pets {
+      model Pet {
+        name: string;
+      }
+
+      interface PetStore {
+        @get
+        @route("/pets")
+        op listPets(): Pet[];
+      }
+    }
+  `);
+
+  const globalNs = runner.program.getGlobalNamespaceType();
+
+  expectRender(
+    runner.program,
+    <OperationMap ns={globalNs} />,
+    `
+      import { type Options, type KyResponse } from "ky";
+      export const operationMap = {
+        "Pets.PetStore.listPets": {
+          operationId: "listPets",
+          method: "GET",
+          path: "/pets",
+          response: {
+            "200": {
+              headers: [],
+              contentTypes: ["application/json"],
+            },
+          },
+        },
+      };
+      export type OperationMap = {
+        Pets: {
+          PetStore: {
+            listPets: (params?: {
+              params?: never;
+              body?: never;
+            }, kyOptions?: Options) => Promise<{
+              response: {
+                statusCode: 200;
+                headers?: never;
+                content: {
+                  name: string;
+                }[];
+              };
+              kyResponse: KyResponse;
+            }>;
+          };
+        };
+      };
+    `,
+  );
+});
+
 it("operation type map", async () => {
   const { Base } = await runner.compile(t.code`
     namespace ${t.namespace("Base")} {

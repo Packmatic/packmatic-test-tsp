@@ -49,7 +49,9 @@ function OperationObjectMap({ operations, baseNs }: Props) {
     <ObjectExpression>
       <For each={operations} comma hardline enderPunctuation>
         {(op) => {
-          const nsPath = getOpNamespacePath(op).replace(`${baseNsPath}.`, "");
+          const nsPath = baseNsPath
+            ? getOpNamespacePath(op).replace(`${baseNsPath}.`, "")
+            : getOpNamespacePath(op);
           return (
             <ObjectProperty name={nsPath}>
               <OperationObjectExpression op={op} />
